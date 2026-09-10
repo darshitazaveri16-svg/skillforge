@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { Compass, User, LogIn, UserPlus, LogOut, LayoutDashboard, Target } from 'lucide-react';
+import { Compass, User, LogIn, UserPlus, LogOut, LayoutDashboard, Target, Briefcase } from 'lucide-react';
 
 export default function Navbar() {
   const { user, logout } = useAuth();
@@ -33,11 +33,27 @@ export default function Navbar() {
           {user ? (
             <>
               <Link
+                to="/careers"
+                className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-slate-300 hover:text-white hover:bg-slate-800/60 rounded-lg transition-colors"
+              >
+                <Briefcase className="w-4 h-4 text-indigo-400" />
+                Careers
+              </Link>
+
+              <Link
                 to="/dashboard"
-                className="flex items-center gap-2 px-3 py-1.5 text-sm font-medium text-slate-300 hover:text-white hover:bg-slate-800/60 rounded-lg transition-colors"
+                className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-slate-300 hover:text-white hover:bg-slate-800/60 rounded-lg transition-colors"
               >
                 <LayoutDashboard className="w-4 h-4 text-indigo-400" />
                 Dashboard
+              </Link>
+
+              <Link
+                to="/profile"
+                className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-slate-300 hover:text-white hover:bg-slate-800/60 rounded-lg transition-colors"
+              >
+                <User className="w-4 h-4 text-indigo-400" />
+                Profile
               </Link>
 
               <div className="flex items-center gap-2 pl-3 border-l border-slate-800">

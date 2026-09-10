@@ -3,6 +3,8 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import healthRoutes from './routes/health.routes.js';
 import authRoutes from './routes/auth.routes.js';
+import careerRoutes from './routes/career.routes.js';
+import skillRoutes from './routes/skill.routes.js';
 
 dotenv.config();
 
@@ -15,5 +17,7 @@ app.use(express.json());
 // Routes
 app.use('/api', healthRoutes);
 app.use('/api/auth', authRoutes);
+app.use('/api/careers', careerRoutes);
+app.use('/api/skills', skillRoutes);
 
 export default app;

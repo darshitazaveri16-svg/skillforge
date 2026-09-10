@@ -34,6 +34,10 @@ const userSchema = new mongoose.Schema(
       default: 'Full Stack Developer',
       trim: true,
     },
+    targetCareerRef: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Career',
+    },
     createdAt: {
       type: Date,
       default: Date.now,

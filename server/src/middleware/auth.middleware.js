@@ -1,4 +1,5 @@
 import jwt from 'jsonwebtoken';
+import mongoose from 'mongoose';
 import User from '../models/User.js';
 
 export const protect = async (req, res, next) => {
@@ -22,23 +23,29 @@ export const protect = async (req, res, next) => {
     const secret = process.env.JWT_SECRET || 'skillforge_super_secret_jwt_key_2026';
     const decoded = jwt.verify(token, secret);
 
-    // Try fetching full user from DB if connected
-    let user;
-    try {
-      user = await User.findById(decoded.id).select('-password');
-    } catch (dbErr) {
-      // Fallback if DB is disconnected in mock/offline mode
-      user = { _id: decoded.id, id: decoded.id, role: decoded.role, email: decoded.email };
+    const isDbConnected = mongoose.connection.readyState === 1;
+
+    if (isDbConnected) {
+      const user = await User.findById(decoded.id).select('-password');
+      if (!user) {
+        return res.status(401).json({
+          success: false,
+          message: 'User no longer exists.',
+        });
+      }
+      req.user = user;
+      return next();
     }
 
-    if (!user) {
-      return res.status(401).json({
-        success: false,
-        message: 'User no longer exists.',
-      });
-    }
+    // Fallback mode: decoded object attached
+    req.user = req.user || {
+      _id: decoded.id,
+      id: decoded.id,
+      email: decoded.email,
+      role: decoded.role || 'student',
+      targetCareer: decoded.targetCareer || 'Full Stack Developer',
+    };
 
-    req.user = user;
     next();
   } catch (err) {
     return res.status(401).json({
