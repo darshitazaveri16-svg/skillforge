@@ -9,6 +9,8 @@ import RegisterPage from './pages/RegisterPage';
 import DashboardPage from './pages/DashboardPage';
 import CareersPage from './pages/CareersPage';
 import ProfilePage from './pages/ProfilePage';
+import AssessmentPage from './pages/AssessmentPage';
+import AssessmentHistoryPage from './pages/AssessmentHistoryPage';
 import ProtectedRoute from './components/ProtectedRoute';
 
 export default function App() {
@@ -43,6 +45,22 @@ export default function App() {
                 element={
                   <ProtectedRoute>
                     <ProfilePage />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/assessment"
+                element={
+                  <ProtectedRoute>
+                    <AssessmentPage />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/assessment/history"
+                element={
+                  <ProtectedRoute>
+                    <AssessmentHistoryPage />
                   </ProtectedRoute>
                 }
               />
