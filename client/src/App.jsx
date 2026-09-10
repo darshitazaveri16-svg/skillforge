@@ -12,6 +12,7 @@ import ProfilePage from './pages/ProfilePage';
 import AssessmentPage from './pages/AssessmentPage';
 import AssessmentHistoryPage from './pages/AssessmentHistoryPage';
 import ReadinessPage from './pages/ReadinessPage';
+import RoadmapPage from './pages/RoadmapPage';
 import ProtectedRoute from './components/ProtectedRoute';
 
 export default function App() {
@@ -70,6 +71,14 @@ export default function App() {
                 element={
                   <ProtectedRoute>
                     <ReadinessPage />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/roadmap"
+                element={
+                  <ProtectedRoute>
+                    <RoadmapPage />
                   </ProtectedRoute>
                 }
               />
