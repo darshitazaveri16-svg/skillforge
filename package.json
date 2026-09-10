@@ -1,0 +1,15 @@
+{
+  "name": "skillforge",
+  "version": "1.0.0",
+  "description": "SkillForge - AI-Powered Skill Assessment & Career Readiness Platform",
+  "private": true,
+  "scripts": {
+    "dev": "concurrently \"npm run dev:server\" \"npm run dev:client\"",
+    "dev:client": "npm run dev --prefix client",
+    "dev:server": "npm run dev --prefix server",
+    "build:client": "npm run build --prefix client"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.2"
+  }
+}
