@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
-import { Compass, Mail, Lock, User, Briefcase, ArrowRight } from 'lucide-react';
+import { Link, useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
+import { Compass, Mail, Lock, User, Briefcase, ArrowRight, AlertCircle, Loader2 } from 'lucide-react';
 
 export default function RegisterPage() {
   const [formData, setFormData] = useState({
@@ -9,6 +10,10 @@ export default function RegisterPage() {
     targetCareer: 'Full Stack Developer',
     password: '',
   });
+  const [errorMessage, setErrorMessage] = useState('');
+
+  const { register, loading } = useAuth();
+  const navigate = useNavigate();
 
   const careers = [
     'Full Stack Developer',
@@ -17,9 +22,21 @@ export default function RegisterPage() {
     'Cybersecurity Analyst',
   ];
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    alert('Stage 1 UI Preview: Registration will be enabled in future stages.');
+    setErrorMessage('');
+
+    if (formData.password.length < 6) {
+      setErrorMessage('Password must be at least 6 characters long.');
+      return;
+    }
+
+    try {
+      await register(formData.name, formData.email, formData.password, formData.targetCareer);
+      navigate('/dashboard');
+    } catch (err) {
+      setErrorMessage(err.message || 'Registration failed. Please try again.');
+    }
   };
 
   return (
@@ -32,6 +49,13 @@ export default function RegisterPage() {
           <h1 className="text-2xl font-bold text-white mb-1">Create Student Account</h1>
           <p className="text-sm text-slate-400">Join SkillForge to assess your career readiness</p>
         </div>
+
+        {errorMessage && (
+          <div className="mb-6 p-4 rounded-xl bg-rose-950/50 border border-rose-800/60 text-rose-300 text-sm flex items-start gap-3">
+            <AlertCircle className="w-5 h-5 text-rose-400 shrink-0 mt-0.5" />
+            <span>{errorMessage}</span>
+          </div>
+        )}
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
@@ -107,7 +131,7 @@ export default function RegisterPage() {
                 required
                 value={formData.password}
                 onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                placeholder="••••••••"
+                placeholder="•••••••• (Min 6 chars)"
                 className="w-full pl-10 pr-4 py-2.5 bg-slate-950 border border-slate-800 rounded-xl text-white placeholder-slate-500 text-sm focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all"
               />
             </div>
@@ -115,10 +139,20 @@ export default function RegisterPage() {
 
           <button
             type="submit"
-            className="w-full flex items-center justify-center gap-2 py-3 px-4 bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 text-white font-semibold rounded-xl text-sm shadow-lg shadow-indigo-600/20 transition-all mt-2"
+            disabled={loading}
+            className="w-full flex items-center justify-center gap-2 py-3 px-4 bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 text-white font-semibold rounded-xl text-sm shadow-lg shadow-indigo-600/20 transition-all disabled:opacity-50 mt-2"
           >
-            Create Account
-            <ArrowRight className="w-4 h-4" />
+            {loading ? (
+              <>
+                <Loader2 className="w-4 h-4 animate-spin" />
+                Creating Account...
+              </>
+            ) : (
+              <>
+                Create Account
+                <ArrowRight className="w-4 h-4" />
+              </>
+            )}
           </button>
         </form>
 
