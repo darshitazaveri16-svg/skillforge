@@ -1,6 +1,7 @@
 import jwt from 'jsonwebtoken';
 import mongoose from 'mongoose';
 import User from '../models/User.js';
+import { inMemoryUsers } from '../controllers/auth.controller.js';
 
 export const protect = async (req, res, next) => {
   let token;
@@ -37,8 +38,12 @@ export const protect = async (req, res, next) => {
       return next();
     }
 
-    // Fallback mode: decoded object attached
-    req.user = req.user || {
+    // Fallback mode: find in memory users store
+    const memUser = inMemoryUsers.find(
+      (u) => u._id === decoded.id || u.id === decoded.id || u.email === decoded.email
+    );
+
+    req.user = memUser || {
       _id: decoded.id,
       id: decoded.id,
       email: decoded.email,
