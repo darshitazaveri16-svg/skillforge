@@ -6,6 +6,7 @@ import authRoutes from './routes/auth.routes.js';
 import careerRoutes from './routes/career.routes.js';
 import skillRoutes from './routes/skill.routes.js';
 import assessmentRoutes from './routes/assessment.routes.js';
+import analysisRoutes from './routes/analysis.routes.js';
 
 dotenv.config();
 
@@ -21,5 +22,6 @@ app.use('/api/auth', authRoutes);
 app.use('/api/careers', careerRoutes);
 app.use('/api/skills', skillRoutes);
 app.use('/api/assessment', assessmentRoutes);
+app.use('/api/analysis', analysisRoutes);
 
 export default app;
