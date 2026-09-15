@@ -7,20 +7,13 @@ export default function RegisterPage() {
   const [formData, setFormData] = useState({
     name: '',
     email: '',
-    targetCareer: 'Full Stack Developer',
     password: '',
+    confirmPassword: '',
   });
   const [errorMessage, setErrorMessage] = useState('');
 
   const { register, loading } = useAuth();
   const navigate = useNavigate();
-
-  const careers = [
-    'Full Stack Developer',
-    'Data Analyst',
-    'Python Developer',
-    'Cybersecurity Analyst',
-  ];
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -31,9 +24,14 @@ export default function RegisterPage() {
       return;
     }
 
+    if (formData.password !== formData.confirmPassword) {
+      setErrorMessage('Passwords do not match.');
+      return;
+    }
+
     try {
-      await register(formData.name, formData.email, formData.password, formData.targetCareer);
-      navigate('/dashboard');
+      await register(formData.name, formData.email, formData.password);
+      navigate('/onboarding');
     } catch (err) {
       setErrorMessage(err.message || 'Registration failed. Please try again.');
     }
@@ -98,28 +96,6 @@ export default function RegisterPage() {
 
           <div>
             <label className="block text-xs font-semibold uppercase tracking-wider text-slate-300 mb-1.5">
-              Target Career Track
-            </label>
-            <div className="relative">
-              <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-500">
-                <Briefcase className="w-4 h-4" />
-              </div>
-              <select
-                value={formData.targetCareer}
-                onChange={(e) => setFormData({ ...formData, targetCareer: e.target.value })}
-                className="w-full pl-10 pr-4 py-2.5 bg-slate-950 border border-slate-800 rounded-xl text-white text-sm focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all appearance-none"
-              >
-                {careers.map((career) => (
-                  <option key={career} value={career} className="bg-slate-900 text-white">
-                    {career}
-                  </option>
-                ))}
-              </select>
-            </div>
-          </div>
-
-          <div>
-            <label className="block text-xs font-semibold uppercase tracking-wider text-slate-300 mb-1.5">
               Password
             </label>
             <div className="relative">
@@ -137,10 +113,29 @@ export default function RegisterPage() {
             </div>
           </div>
 
+          <div>
+            <label className="block text-xs font-semibold uppercase tracking-wider text-slate-300 mb-1.5">
+              Confirm Password
+            </label>
+            <div className="relative">
+              <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-500">
+                <Lock className="w-4 h-4" />
+              </div>
+              <input
+                type="password"
+                required
+                value={formData.confirmPassword}
+                onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
+                placeholder="••••••••"
+                className="w-full pl-10 pr-4 py-2.5 bg-slate-950 border border-slate-800 rounded-xl text-white placeholder-slate-500 text-sm focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all"
+              />
+            </div>
+          </div>
+
           <button
             type="submit"
             disabled={loading}
-            className="w-full flex items-center justify-center gap-2 py-3 px-4 bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 text-white font-semibold rounded-xl text-sm shadow-lg shadow-indigo-600/20 transition-all disabled:opacity-50 mt-2"
+            className="w-full flex items-center justify-center gap-2 py-3 px-4 bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 text-white font-semibold rounded-xl text-sm shadow-lg shadow-indigo-600/20 transition-all disabled:opacity-50 mt-2 cursor-pointer"
           >
             {loading ? (
               <>

@@ -31,12 +31,13 @@ const userSchema = new mongoose.Schema(
     },
     targetCareer: {
       type: String,
-      default: 'Full Stack Developer',
       trim: true,
+      default: null,
     },
     targetCareerRef: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'Career',
+      default: null,
     },
     createdAt: {
       type: Date,

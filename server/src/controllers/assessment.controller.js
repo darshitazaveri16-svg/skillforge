@@ -6,6 +6,7 @@ import Career from '../models/Career.js';
 import Skill from '../models/Skill.js';
 import User from '../models/User.js';
 import { inMemoryStore } from '../config/seedData.js';
+import { inMemoryUsers } from './auth.controller.js';
 
 // Fallback in-memory assessment data store
 export const inMemoryAssessments = [];
@@ -29,17 +30,36 @@ const getNextDifficulty = (currentDifficulty, isCorrect) => {
 // @access  Private
 export const startAssessment = async (req, res) => {
   try {
-    const user = req.user;
-    const targetCareerName = user.targetCareer || 'Full Stack Developer';
-
     const isDbConnected = mongoose.connection.readyState === 1;
 
     if (isDbConnected) {
-      const career = await Career.findOne({ name: targetCareerName }).populate('requiredSkills.skill');
-      if (!career) {
+      const user = await User.findById(req.user._id);
+      if (!user) {
         return res.status(404).json({
           success: false,
-          message: 'Selected target career track not found. Please select a career first.',
+          message: 'User not found.',
+        });
+      }
+
+      if (!user.targetCareerRef && !user.targetCareer) {
+        return res.status(400).json({
+          success: false,
+          message: 'Please select a target career before starting an assessment.',
+        });
+      }
+
+      let career = null;
+      if (user.targetCareerRef) {
+        career = await Career.findById(user.targetCareerRef).populate('requiredSkills.skill');
+      }
+      if (!career && user.targetCareer) {
+        career = await Career.findOne({ name: user.targetCareer }).populate('requiredSkills.skill');
+      }
+
+      if (!career) {
+        return res.status(400).json({
+          success: false,
+          message: 'Please select a target career before starting an assessment.',
         });
       }
 
@@ -92,18 +112,56 @@ export const startAssessment = async (req, res) => {
     }
 
     // In-memory fallback execution
-    const careerObj = inMemoryStore.careers.find((c) => c.name === targetCareerName) || inMemoryStore.careers[0];
+    const memUser = inMemoryUsers.find(
+      (u) => u._id === req.user._id || u.id === req.user.id || u.email === req.user.email
+    ) || req.user;
+
+    if (!memUser.targetCareerRef && !memUser.targetCareer) {
+      return res.status(400).json({
+        success: false,
+        message: 'Please select a target career before starting an assessment.',
+      });
+    }
+
+    let careerObj = null;
+    if (memUser.targetCareerRef) {
+      careerObj = inMemoryStore.careers.find(
+        (c) =>
+          c._id === memUser.targetCareerRef ||
+          c.id === memUser.targetCareerRef ||
+          (memUser.targetCareerRef._id && c._id === memUser.targetCareerRef._id)
+      );
+    }
+    if (!careerObj && memUser.targetCareer) {
+      careerObj = inMemoryStore.careers.find((c) => c.name === memUser.targetCareer);
+    }
+
     if (!careerObj) {
+      return res.status(400).json({
+        success: false,
+        message: 'Please select a target career before starting an assessment.',
+      });
+    }
+
+    const careerSkillNames = careerObj.requiredSkills.map((rs) => rs.skill?.name || rs.name);
+    const careerSkillIds = careerObj.requiredSkills.map((rs) => rs.skill?._id || rs.skill?.id || rs.skill);
+
+    const careerQuestions = inMemoryStore.questions.filter((q) => {
+      const qSkillId = q.skill?._id || q.skill?.id || q.skill;
+      return careerSkillNames.includes(q.skillName) || careerSkillIds.includes(qSkillId);
+    });
+
+    if (careerQuestions.length === 0) {
       return res.status(404).json({
         success: false,
-        message: 'No career track found.',
+        message: 'No questions available for your target career track.',
       });
     }
 
     const memAssessment = {
       _id: `asm_${Date.now()}`,
       id: `asm_${Date.now()}`,
-      user: user._id || user.id,
+      user: memUser._id || memUser.id,
       career: careerObj._id,
       careerName: careerObj.name,
       currentDifficulty: 'medium',
@@ -114,7 +172,7 @@ export const startAssessment = async (req, res) => {
 
     inMemoryAssessments.push(memAssessment);
 
-    const firstQ = inMemoryStore.questions.find((q) => q.difficulty === 'medium') || inMemoryStore.questions[0];
+    const firstQ = careerQuestions.find((q) => q.difficulty === 'medium') || careerQuestions[0];
 
     res.status(201).json({
       success: true,
@@ -211,7 +269,7 @@ export const submitAnswer = async (req, res) => {
 
       // Fetch next question matching new difficulty
       const career = await Career.findById(assessment.career);
-      const skillIds = career.requiredSkills.map((rs) => rs.skill);
+      const skillIds = career.requiredSkills.map((rs) => rs.skill._id || rs.skill);
 
       let nextQuestion = await Question.findOne({
         _id: { $nin: answeredQuestionIds },
@@ -295,9 +353,23 @@ export const submitAnswer = async (req, res) => {
       });
     }
 
-    const nextQ = inMemoryStore.questions.find(
-      (q) => !answeredIds.includes(q._id) && q.difficulty === newDifficulty
-    ) || inMemoryStore.questions.find((q) => !answeredIds.includes(q._id));
+    const careerObj = inMemoryStore.careers.find(
+      (c) => c._id === memAssessment.career || c.id === memAssessment.career || c.name === memAssessment.careerName
+    );
+
+    let candidateQuestions = inMemoryStore.questions;
+    if (careerObj) {
+      const careerSkillNames = careerObj.requiredSkills.map((rs) => rs.skill?.name || rs.name);
+      const careerSkillIds = careerObj.requiredSkills.map((rs) => rs.skill?._id || rs.skill?.id || rs.skill);
+      candidateQuestions = inMemoryStore.questions.filter((q) => {
+        const qSkillId = q.skill?._id || q.skill?.id || q.skill;
+        return careerSkillNames.includes(q.skillName) || careerSkillIds.includes(qSkillId);
+      });
+    }
+
+    const nextQ = candidateQuestions.find(
+      (q) => !answeredIds.includes(q._id) && !answeredIds.includes(q.id) && q.difficulty === newDifficulty
+    ) || candidateQuestions.find((q) => !answeredIds.includes(q._id) && !answeredIds.includes(q.id));
 
     if (!nextQ) {
       return res.status(200).json({

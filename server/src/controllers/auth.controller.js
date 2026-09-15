@@ -60,11 +60,17 @@ export const register = async (req, res) => {
       const salt = await bcrypt.genSalt(10);
       const hashedPassword = await bcrypt.hash(password, salt);
 
+      let careerDoc = null;
+      if (targetCareer) {
+        careerDoc = await Career.findOne({ name: targetCareer });
+      }
+
       const user = await User.create({
         name,
         email: formattedEmail,
         password: hashedPassword,
-        targetCareer: targetCareer || 'Full Stack Developer',
+        targetCareer: careerDoc ? careerDoc.name : (targetCareer || null),
+        targetCareerRef: careerDoc ? careerDoc._id : null,
         role: role === 'admin' ? 'admin' : 'student',
       });
 
@@ -78,7 +84,8 @@ export const register = async (req, res) => {
           name: user.name,
           email: user.email,
           role: user.role,
-          targetCareer: user.targetCareer,
+          targetCareer: user.targetCareer || null,
+          targetCareerRef: user.targetCareerRef || null,
           createdAt: user.createdAt,
         },
       });
@@ -96,13 +103,21 @@ export const register = async (req, res) => {
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
 
+    let memCareer = null;
+    if (targetCareer && inMemoryStore.careers) {
+      memCareer = inMemoryStore.careers.find(
+        (c) => c.name === targetCareer || c._id === targetCareer || c.id === targetCareer
+      );
+    }
+
     const memUser = {
       _id: `usr_${Date.now()}`,
       id: `usr_${Date.now()}`,
       name,
       email: formattedEmail,
       password: hashedPassword,
-      targetCareer: targetCareer || 'Full Stack Developer',
+      targetCareer: memCareer ? memCareer.name : (targetCareer || null),
+      targetCareerRef: memCareer ? (memCareer._id || memCareer.id) : null,
       role: role === 'admin' ? 'admin' : 'student',
       createdAt: new Date(),
     };
@@ -119,7 +134,8 @@ export const register = async (req, res) => {
         name: memUser.name,
         email: memUser.email,
         role: memUser.role,
-        targetCareer: memUser.targetCareer,
+        targetCareer: memUser.targetCareer || null,
+        targetCareerRef: memUser.targetCareerRef || null,
         createdAt: memUser.createdAt,
       },
     });
@@ -176,7 +192,8 @@ export const login = async (req, res) => {
           name: user.name,
           email: user.email,
           role: user.role,
-          targetCareer: user.targetCareer,
+          targetCareer: user.targetCareer || null,
+          targetCareerRef: user.targetCareerRef || null,
           createdAt: user.createdAt,
         },
       });
@@ -209,7 +226,8 @@ export const login = async (req, res) => {
         name: memUser.name,
         email: memUser.email,
         role: memUser.role,
-        targetCareer: memUser.targetCareer,
+        targetCareer: memUser.targetCareer || null,
+        targetCareerRef: memUser.targetCareerRef || null,
         createdAt: memUser.createdAt,
       },
     });

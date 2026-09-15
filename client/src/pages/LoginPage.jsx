@@ -16,8 +16,12 @@ export default function LoginPage() {
     setErrorMessage('');
 
     try {
-      await login(email, password);
-      navigate('/dashboard');
+      const data = await login(email, password);
+      if (data?.user?.targetCareerRef) {
+        navigate('/dashboard');
+      } else {
+        navigate('/onboarding');
+      }
     } catch (err) {
       setErrorMessage(err.message || 'Login failed. Please check your credentials.');
     }

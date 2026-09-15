@@ -37,7 +37,8 @@ export default function AssessmentPage() {
   const [answerReview, setAnswerReview] = useState([]);
   const [error, setError] = useState(null);
 
-  const targetCareer = user?.targetCareer || 'Full Stack Developer';
+  const hasCareer = Boolean(user?.targetCareerRef || user?.targetCareer);
+  const targetCareer = user?.targetCareer || 'Target Career';
 
   const handleStartAssessment = async () => {
     setError(null);
@@ -71,6 +72,26 @@ export default function AssessmentPage() {
       setSubmitting(false);
     }
   };
+
+  if (!hasCareer) {
+    return (
+      <div className="max-w-xl mx-auto px-4 py-16 text-center">
+        <div className="bg-slate-900 border border-amber-500/30 rounded-2xl p-8 shadow-xl">
+          <AlertCircle className="w-12 h-12 text-amber-400 mx-auto mb-4" />
+          <h2 className="text-xl font-bold text-white mb-2">Target Career Required</h2>
+          <p className="text-slate-400 text-sm mb-6">
+            Please select a target career before starting an assessment. SkillForge personalizes all questions to your chosen career pathway.
+          </p>
+          <Link
+            to="/onboarding"
+            className="px-6 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white font-semibold rounded-xl inline-flex items-center gap-2 transition cursor-pointer"
+          >
+            Select Target Career <ArrowRight className="w-4 h-4" />
+          </Link>
+        </div>
+      </div>
+    );
+  }
 
   const handleSubmitAnswer = async () => {
     if (selectedOption === null) return;

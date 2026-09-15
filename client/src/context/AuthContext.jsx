@@ -78,12 +78,17 @@ export const AuthProvider = ({ children }) => {
     setError(null);
     setLoading(true);
     try {
+      const payload = { name, email, password };
+      if (targetCareer) {
+        payload.targetCareer = targetCareer;
+      }
+
       const response = await fetch(`${API_URL}/auth/register`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ name, email, password, targetCareer }),
+        body: JSON.stringify(payload),
       });
 
       const data = await response.json();
@@ -104,6 +109,10 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  const updateUser = (userData) => {
+    setUser(userData);
+  };
+
   const logout = () => {
     localStorage.removeItem('skillforge_token');
     setToken(null);
@@ -120,6 +129,7 @@ export const AuthProvider = ({ children }) => {
         error,
         login,
         register,
+        updateUser,
         logout,
         setError,
       }}

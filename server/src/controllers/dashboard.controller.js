@@ -8,6 +8,7 @@ import { calculateSkillGapAndReadiness } from '../services/skillGap.service.js';
 import { inMemoryStore } from '../config/seedData.js';
 import { inMemoryAssessments, inMemoryAssessmentResults } from './assessment.controller.js';
 import { inMemoryRoadmaps } from './roadmap.controller.js';
+import { inMemoryUsers } from './auth.controller.js';
 
 /**
  * @desc    Get aggregated dashboard data for authenticated student
@@ -17,7 +18,6 @@ import { inMemoryRoadmaps } from './roadmap.controller.js';
 export const getDashboard = async (req, res) => {
   try {
     const userId = req.user._id || req.user.id;
-    const targetCareerName = req.user.targetCareer || 'Full Stack Developer';
     const isDbConnected = mongoose.connection.readyState === 1;
 
     let user = null;
@@ -25,37 +25,47 @@ export const getDashboard = async (req, res) => {
     let latestResultDoc = null;
 
     if (isDbConnected) {
-      user = await User.findById(userId).populate('targetCareer');
+      user = await User.findById(userId);
       if (user && user.targetCareerRef) {
         careerDoc = await Career.findById(user.targetCareerRef).populate('requiredSkills.skill');
       }
-      if (!careerDoc) {
-        careerDoc = await Career.findOne({ name: targetCareerName }).populate('requiredSkills.skill');
+      if (!careerDoc && user && user.targetCareer) {
+        careerDoc = await Career.findOne({ name: user.targetCareer }).populate('requiredSkills.skill');
       }
     } else {
-      user = inMemoryStore.users?.find((u) => u._id === userId || u.id === userId) || req.user;
-      careerDoc = inMemoryStore.careers.find(
-        (c) => c.name === targetCareerName || c._id === req.user.targetCareerRef || c.id === req.user.targetCareerRef
-      ) || inMemoryStore.careers[0];
+      user = inMemoryUsers.find((u) => u._id === userId || u.id === userId) || req.user;
+      if (user && user.targetCareerRef) {
+        careerDoc = inMemoryStore.careers.find(
+          (c) =>
+            c._id === user.targetCareerRef ||
+            c.id === user.targetCareerRef ||
+            (user.targetCareerRef._id && c._id === user.targetCareerRef._id)
+        );
+      }
+      if (!careerDoc && user && user.targetCareer) {
+        careerDoc = inMemoryStore.careers.find((c) => c.name === user.targetCareer);
+      }
     }
 
     if (!user) {
       user = req.user;
     }
 
+    const hasCareer = Boolean(careerDoc);
+
     const studentInfo = {
       name: user.name,
       email: user.email,
       role: user.role || 'student',
-      targetCareer: careerDoc ? careerDoc.name : targetCareerName
+      targetCareer: careerDoc ? careerDoc.name : (user.targetCareer || null)
     };
 
     // If student has not selected a target career
-    if (!careerDoc && !targetCareerName) {
+    if (!hasCareer) {
       return res.status(200).json({
         student: studentInfo,
         career: null,
-        readiness: null,
+        readiness: { score: null, assessmentScore: null },
         skillSummary: { strong: 0, moderate: 0, needsImprovement: 0, critical: 0 },
         strongestSkills: [],
         weakestSkills: [],

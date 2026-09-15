@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate, Navigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import {
   User,
@@ -33,17 +33,19 @@ import {
 } from 'recharts';
 
 export default function DashboardPage() {
-  const { user } = useAuth();
+  const { user, token: authToken } = useAuth();
+  const navigate = useNavigate();
   const [dashboardData, setDashboardData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
 
   const fetchDashboardData = async () => {
     setLoading(true);
     setError('');
     try {
-      const token = localStorage.getItem('token');
-      const res = await fetch('/api/dashboard', {
+      const token = authToken || localStorage.getItem('skillforge_token') || localStorage.getItem('token');
+      const res = await fetch(`${API_URL}/dashboard`, {
         headers: {
           Authorization: `Bearer ${token}`
         }
@@ -65,7 +67,7 @@ export default function DashboardPage() {
 
   useEffect(() => {
     fetchDashboardData();
-  }, []);
+  }, [authToken]);
 
   if (loading) {
     return (
@@ -92,7 +94,7 @@ export default function DashboardPage() {
           <p className="text-slate-400 text-sm mb-6">{error}</p>
           <button
             onClick={fetchDashboardData}
-            className="px-6 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white font-semibold rounded-xl inline-flex items-center gap-2 transition"
+            className="px-6 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white font-semibold rounded-xl inline-flex items-center gap-2 transition cursor-pointer"
           >
             <RefreshCw className="w-4 h-4" /> Retry Loading
           </button>
@@ -118,12 +120,17 @@ export default function DashboardPage() {
     hasAssessment
   } = dashboardData || {};
 
-  // NO-DATA / ONBOARDING STATE
-  if (!hasCareer || !hasAssessment) {
+  // NO CAREER SELECTED: Redirect to Onboarding
+  if (!hasCareer) {
+    return <Navigate to="/onboarding" replace />;
+  }
+
+  // CAREER SELECTED BUT NO ASSESSMENT COMPLETED: Clean Next-Step State
+  if (!hasAssessment) {
     return (
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-8">
         {/* Welcome Header */}
-        <div className="bg-slate-900 border border-slate-800 rounded-2xl p-8 shadow-xl mb-8">
+        <div className="bg-slate-900 border border-slate-800 rounded-2xl p-8 shadow-xl">
           <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
             <div className="flex items-center gap-4">
               <div className="w-16 h-16 rounded-2xl bg-gradient-to-tr from-indigo-600 to-violet-600 flex items-center justify-center text-white text-2xl font-bold shadow-lg shadow-indigo-600/30">
@@ -143,11 +150,40 @@ export default function DashboardPage() {
             <div className="flex items-center gap-3">
               <Link
                 to="/careers"
-                className="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white font-semibold rounded-xl text-sm transition shadow-lg shadow-indigo-600/25 flex items-center gap-2"
+                className="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white font-semibold rounded-xl text-sm transition border border-slate-700 flex items-center gap-2"
               >
-                <Target className="w-4 h-4" /> Choose Target Career
+                <Target className="w-4 h-4 text-indigo-400" /> Change Career
               </Link>
             </div>
+          </div>
+        </div>
+
+        {/* Next-Step Hero Banner */}
+        <div className="bg-gradient-to-br from-indigo-950/40 via-slate-900 to-slate-900 border border-indigo-500/30 rounded-2xl p-8 shadow-xl">
+          <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+            <div>
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 text-xs font-semibold uppercase tracking-wider mb-3">
+                <Sparkles className="w-3.5 h-3.5" /> Ready for Next Step
+              </div>
+              <h2 className="text-2xl sm:text-3xl font-extrabold text-white mb-2">
+                You're ready to begin.
+              </h2>
+              <p className="text-slate-300 text-sm sm:text-base max-w-2xl mb-2">
+                Target Career: <span className="font-semibold text-white">{career?.name}</span>
+              </p>
+              <p className="text-slate-400 text-sm max-w-2xl">
+                Next Step: Take your skill assessment to discover your strengths and skill gaps.
+              </p>
+            </div>
+
+            <Link
+              to="/assessment"
+              className="px-6 py-3.5 bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 text-white font-bold rounded-xl text-sm shadow-xl shadow-indigo-600/30 transition-all flex items-center gap-2 whitespace-nowrap cursor-pointer shrink-0"
+            >
+              <Play className="w-4 h-4 fill-white" />
+              Start Assessment
+              <ArrowRight className="w-4 h-4" />
+            </Link>
           </div>
         </div>
 
