@@ -95,6 +95,52 @@ VITE_API_URL=http://localhost:5000/api
 
 ---
 
+## Stage 9: Admin Dashboard & Platform Management
+
+SkillForge Stage 9 introduces a dedicated, high-security Admin Dashboard for platform management, analytics, and content moderation.
+
+### 1. Admin Authorization Architecture
+- **Role Verification**: Admin access relies directly on `User.role === 'admin'`.
+- **Backend Security Boundary**: `requireAdmin` middleware enforces authentication and admin privileges on every administrative route. Unauthorized requests from students return `HTTP 403 Forbidden`. Unauthenticated requests return `HTTP 401 Unauthorized`.
+- **Frontend Protection**: Handled via `AdminProtectedRoute`, which redirects non-admin or unauthenticated users to `/dashboard` or `/login`.
+
+### 2. Admin Management Features
+- **Platform Analytics (`/admin`)**: Aggregated metrics including total students, active careers, skill catalog count, question bank size, total and completed assessments, average assessment scores, average resume match scores, and student career distribution charts using Recharts.
+- **Student Management (`/admin/students`)**: Search, filter by career track, and view registered students. Sensitive fields such as passwords, password hashes, JWTs, and private resume contents are completely sanitized and never exposed.
+- **Career Management (`/admin/careers`)**: Create, edit, and delete career tracks. Includes data integrity safeguards that reject deletion if a career is actively referenced by students, assessments, results, roadmaps, or resume analyses.
+- **Skill Management (`/admin/skills`)**: Create, edit, and delete technical skills with duplicate name prevention and career relationship tracking.
+- **Question Bank Management (`/admin/questions`)**: Filter by career, skill, and difficulty (Easy/Medium/Hard). Create and edit 4-option multiple-choice questions with answer keys and explanations. Students continue to receive questions without exposing `correctAnswer`.
+
+### 3. Admin API Endpoints
+
+| Method | Endpoint | Authorization | Description |
+|---|---|---|---|
+| `GET` | `/api/admin/dashboard` | Admin Only | Aggregated platform metrics and distribution statistics |
+| `GET` | `/api/admin/students` | Admin Only | Paginated list of registered students with search and career filters |
+| `GET` | `/api/admin/careers` | Admin Only | Full careers catalog with populated required skills |
+| `POST` | `/api/admin/careers` | Admin Only | Create a new career track |
+| `PUT` | `/api/admin/careers/:id` | Admin Only | Update an existing career track |
+| `DELETE` | `/api/admin/careers/:id` | Admin Only | Safely delete career (blocked if active dependencies exist) |
+| `GET` | `/api/admin/skills` | Admin Only | Full skills catalog enriched with associated careers |
+| `POST` | `/api/admin/skills` | Admin Only | Create a new technical skill (duplicate names rejected) |
+| `PUT` | `/api/admin/skills/:id` | Admin Only | Update skill name, category, or description |
+| `DELETE` | `/api/admin/skills/:id` | Admin Only | Safely delete skill (blocked if linked to careers or questions) |
+| `GET` | `/api/admin/questions` | Admin Only | Question bank with full details and correct answers |
+| `POST` | `/api/admin/questions` | Admin Only | Create a new 4-option question |
+| `PUT` | `/api/admin/questions/:id` | Admin Only | Update existing question prompt, options, or explanation |
+| `DELETE` | `/api/admin/questions/:id` | Admin Only | Delete question from question bank |
+
+### 4. Development Admin Setup
+To create an administrative user locally or in MongoDB Atlas without hardcoding credentials in source control:
+
+```bash
+cd server
+ADMIN_EMAIL="admin@skillforge.test" ADMIN_PASSWORD="YourSecurePassword123!" node create-admin.js
+```
+The script securely hashes the password using bcrypt and assigns `role: "admin"`.
+
+---
+
 ## Running the Application
 
 ### 1. Backend Server
@@ -114,9 +160,11 @@ npm run dev    # Starts Vite dev server on http://localhost:5173
 ### 3. Running Automated Tests
 ```bash
 cd server
+node test-stage9.js              # Stage 9 Admin Dashboard + Platform Management suite (28 tests)
 node test-stage8.js              # Stage 8 Resume Analyzer + AI test suite (17 tests)
-node test-atlas-persistence.js   # MongoDB Atlas persistence verification
-node test-stage7.js              # Stage 7 Dashboard regression tests
+node test-atlas-persistence.js   # MongoDB Atlas persistence verification (17 checks)
+node test-mvp-fixes.js           # MVP UX + Functionality test suite (46 tests)
+node test-stage7.js              # Stage 7 Dashboard regression tests (30 tests)
 node test-stage6.js              # Stage 6 Roadmap regression tests
 node test-stage5.js              # Stage 5 Skill Gap regression tests
 node test-stage4.js              # Stage 4 Assessment regression tests
@@ -128,3 +176,4 @@ node test-stage3.js              # Stage 3 Careers & Skills regression tests
 cd client
 npm run build
 ```
+

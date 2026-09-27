@@ -59,3 +59,26 @@ export const protect = async (req, res, next) => {
     });
   }
 };
+
+/**
+ * Middleware to restrict access strictly to users with role === 'admin'
+ * Returns HTTP 403 Forbidden on unauthorized student access.
+ */
+export const requireAdmin = (req, res, next) => {
+  if (!req.user) {
+    return res.status(401).json({
+      success: false,
+      message: 'Not authorized to access this route. Token missing.',
+    });
+  }
+
+  if (req.user.role !== 'admin') {
+    return res.status(403).json({
+      success: false,
+      message: 'Access denied: Admin privileges required.',
+    });
+  }
+
+  next();
+};
+

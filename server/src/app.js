@@ -10,6 +10,7 @@ import analysisRoutes from './routes/analysis.routes.js';
 import roadmapRoutes from './routes/roadmap.routes.js';
 import dashboardRoutes from './routes/dashboard.routes.js';
 import resumeRoutes from './routes/resume.routes.js';
+import adminRoutes from './routes/admin.routes.js';
 
 dotenv.config();
 
@@ -29,5 +30,6 @@ app.use('/api/analysis', analysisRoutes);
 app.use('/api/roadmap', roadmapRoutes);
 app.use('/api/dashboard', dashboardRoutes);
 app.use('/api/resume', resumeRoutes);
+app.use('/api/admin', adminRoutes);
 
 export default app;

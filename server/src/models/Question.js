@@ -27,6 +27,11 @@ const questionSchema = new mongoose.Schema(
       ref: 'Skill',
       required: [true, 'Please specify associated skill'],
     },
+    career: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Career',
+      default: null,
+    },
     difficulty: {
       type: String,
       required: [true, 'Please specify difficulty level'],

@@ -29,87 +29,154 @@ export default function Navbar() {
           </div>
         </Link>
 
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2 sm:gap-3 flex-wrap">
           {user ? (
-            <>
-              <Link
-                to="/careers"
-                className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-slate-300 hover:text-white hover:bg-slate-800/60 rounded-lg transition-colors"
-              >
-                <Briefcase className="w-4 h-4 text-indigo-400" />
-                Careers
-              </Link>
-
-              <Link
-                to="/assessment"
-                className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-slate-300 hover:text-white hover:bg-slate-800/60 rounded-lg transition-colors"
-              >
-                <BrainCircuit className="w-4 h-4 text-indigo-400" />
-                Assessment
-              </Link>
-
-              <Link
-                to="/readiness"
-                className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-slate-300 hover:text-white hover:bg-slate-800/60 rounded-lg transition-colors"
-              >
-                <TrendingUp className="w-4 h-4 text-indigo-400" />
-                Readiness
-              </Link>
-
-              <Link
-                to="/roadmap"
-                className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-slate-300 hover:text-white hover:bg-slate-800/60 rounded-lg transition-colors"
-              >
-                <Map className="w-4 h-4 text-indigo-400" />
-                Learning Roadmap
-              </Link>
-
-              <Link
-                to="/resume-analyzer"
-                className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-slate-300 hover:text-white hover:bg-slate-800/60 rounded-lg transition-colors"
-              >
-                <FileText className="w-4 h-4 text-indigo-400" />
-                Resume Analyzer
-              </Link>
-
-              <Link
-                to="/dashboard"
-                className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-slate-300 hover:text-white hover:bg-slate-800/60 rounded-lg transition-colors"
-              >
-                <LayoutDashboard className="w-4 h-4 text-indigo-400" />
-                Dashboard
-              </Link>
-
-              <Link
-                to="/profile"
-                className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-slate-300 hover:text-white hover:bg-slate-800/60 rounded-lg transition-colors"
-              >
-                <User className="w-4 h-4 text-indigo-400" />
-                Profile
-              </Link>
-
-              <div className="flex items-center gap-2 pl-3 border-l border-slate-800">
-                <div className="flex flex-col text-right hidden sm:flex">
-                  <span className="text-sm font-semibold text-white">{user.name}</span>
-                  <span className="text-[11px] text-indigo-400 font-medium flex items-center justify-end gap-1">
-                    <Target className="w-3 h-3" />
-                    {user.targetCareer || 'Full Stack Developer'}
-                  </span>
-                </div>
-
-                <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-indigo-600 to-violet-600 flex items-center justify-center text-white font-bold text-xs shadow-md">
-                  {user.name ? user.name.charAt(0).toUpperCase() : 'U'}
-                </div>
-
-                <button
-                  onClick={handleLogout}
-                  title="Logout"
-                  className="p-2 text-slate-400 hover:text-rose-400 hover:bg-rose-950/30 rounded-lg transition-colors ml-1"
+            user.role === 'admin' ? (
+              // Admin Navigation
+              <>
+                <Link
+                  to="/admin"
+                  className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-slate-300 hover:text-white hover:bg-slate-800/60 rounded-lg transition-colors"
                 >
-                  <LogOut className="w-4 h-4" />
-                </button>
-              </div>
-            </>
+                  <LayoutDashboard className="w-4 h-4 text-rose-400" />
+                  Dashboard
+                </Link>
+
+                <Link
+                  to="/admin/students"
+                  className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-slate-300 hover:text-white hover:bg-slate-800/60 rounded-lg transition-colors"
+                >
+                  <User className="w-4 h-4 text-rose-400" />
+                  Students
+                </Link>
+
+                <Link
+                  to="/admin/careers"
+                  className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-slate-300 hover:text-white hover:bg-slate-800/60 rounded-lg transition-colors"
+                >
+                  <Briefcase className="w-4 h-4 text-rose-400" />
+                  Careers
+                </Link>
+
+                <Link
+                  to="/admin/skills"
+                  className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-slate-300 hover:text-white hover:bg-slate-800/60 rounded-lg transition-colors"
+                >
+                  <BrainCircuit className="w-4 h-4 text-rose-400" />
+                  Skills
+                </Link>
+
+                <Link
+                  to="/admin/questions"
+                  className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-slate-300 hover:text-white hover:bg-slate-800/60 rounded-lg transition-colors"
+                >
+                  <TrendingUp className="w-4 h-4 text-rose-400" />
+                  Questions
+                </Link>
+
+                <div className="flex items-center gap-2 pl-3 border-l border-slate-800">
+                  <div className="flex flex-col text-right hidden sm:flex">
+                    <span className="text-sm font-semibold text-white">{user.name}</span>
+                    <span className="text-[10px] text-rose-400 font-bold tracking-wider uppercase">
+                      Platform Admin
+                    </span>
+                  </div>
+
+                  <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-rose-600 to-indigo-600 flex items-center justify-center text-white font-bold text-xs shadow-md">
+                    {user.name ? user.name.charAt(0).toUpperCase() : 'A'}
+                  </div>
+
+                  <button
+                    onClick={handleLogout}
+                    title="Logout"
+                    className="p-2 text-slate-400 hover:text-rose-400 hover:bg-rose-950/30 rounded-lg transition-colors ml-1"
+                  >
+                    <LogOut className="w-4 h-4" />
+                  </button>
+                </div>
+              </>
+            ) : (
+              // Student Navigation (Unchanged)
+              <>
+                <Link
+                  to="/careers"
+                  className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-slate-300 hover:text-white hover:bg-slate-800/60 rounded-lg transition-colors"
+                >
+                  <Briefcase className="w-4 h-4 text-indigo-400" />
+                  Careers
+                </Link>
+
+                <Link
+                  to="/assessment"
+                  className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-slate-300 hover:text-white hover:bg-slate-800/60 rounded-lg transition-colors"
+                >
+                  <BrainCircuit className="w-4 h-4 text-indigo-400" />
+                  Assessment
+                </Link>
+
+                <Link
+                  to="/readiness"
+                  className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-slate-300 hover:text-white hover:bg-slate-800/60 rounded-lg transition-colors"
+                >
+                  <TrendingUp className="w-4 h-4 text-indigo-400" />
+                  Readiness
+                </Link>
+
+                <Link
+                  to="/roadmap"
+                  className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-slate-300 hover:text-white hover:bg-slate-800/60 rounded-lg transition-colors"
+                >
+                  <Map className="w-4 h-4 text-indigo-400" />
+                  Learning Roadmap
+                </Link>
+
+                <Link
+                  to="/resume-analyzer"
+                  className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-slate-300 hover:text-white hover:bg-slate-800/60 rounded-lg transition-colors"
+                >
+                  <FileText className="w-4 h-4 text-indigo-400" />
+                  Resume Analyzer
+                </Link>
+
+                <Link
+                  to="/dashboard"
+                  className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-slate-300 hover:text-white hover:bg-slate-800/60 rounded-lg transition-colors"
+                >
+                  <LayoutDashboard className="w-4 h-4 text-indigo-400" />
+                  Dashboard
+                </Link>
+
+                <Link
+                  to="/profile"
+                  className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-slate-300 hover:text-white hover:bg-slate-800/60 rounded-lg transition-colors"
+                >
+                  <User className="w-4 h-4 text-indigo-400" />
+                  Profile
+                </Link>
+
+                <div className="flex items-center gap-2 pl-3 border-l border-slate-800">
+                  <div className="flex flex-col text-right hidden sm:flex">
+                    <span className="text-sm font-semibold text-white">{user.name}</span>
+                    <span className="text-[11px] text-indigo-400 font-medium flex items-center justify-end gap-1">
+                      <Target className="w-3 h-3" />
+                      {user.targetCareer || 'Full Stack Developer'}
+                    </span>
+                  </div>
+
+                  <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-indigo-600 to-violet-600 flex items-center justify-center text-white font-bold text-xs shadow-md">
+                    {user.name ? user.name.charAt(0).toUpperCase() : 'U'}
+                  </div>
+
+                  <button
+                    onClick={handleLogout}
+                    title="Logout"
+                    className="p-2 text-slate-400 hover:text-rose-400 hover:bg-rose-950/30 rounded-lg transition-colors ml-1"
+                  >
+                    <LogOut className="w-4 h-4" />
+                  </button>
+                </div>
+              </>
+            )
           ) : (
             <>
               <Link

@@ -16,6 +16,12 @@ import ReadinessPage from './pages/ReadinessPage';
 import RoadmapPage from './pages/RoadmapPage';
 import ResumeAnalyzerPage from './pages/ResumeAnalyzerPage';
 import ProtectedRoute from './components/ProtectedRoute';
+import AdminProtectedRoute from './components/AdminProtectedRoute';
+import AdminDashboardPage from './pages/AdminDashboardPage';
+import AdminStudentsPage from './pages/AdminStudentsPage';
+import AdminCareersPage from './pages/AdminCareersPage';
+import AdminSkillsPage from './pages/AdminSkillsPage';
+import AdminQuestionsPage from './pages/AdminQuestionsPage';
 
 export default function App() {
   return (
@@ -98,6 +104,46 @@ export default function App() {
                   <ProtectedRoute>
                     <ResumeAnalyzerPage />
                   </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/admin"
+                element={
+                  <AdminProtectedRoute>
+                    <AdminDashboardPage />
+                  </AdminProtectedRoute>
+                }
+              />
+              <Route
+                path="/admin/students"
+                element={
+                  <AdminProtectedRoute>
+                    <AdminStudentsPage />
+                  </AdminProtectedRoute>
+                }
+              />
+              <Route
+                path="/admin/careers"
+                element={
+                  <AdminProtectedRoute>
+                    <AdminCareersPage />
+                  </AdminProtectedRoute>
+                }
+              />
+              <Route
+                path="/admin/skills"
+                element={
+                  <AdminProtectedRoute>
+                    <AdminSkillsPage />
+                  </AdminProtectedRoute>
+                }
+              />
+              <Route
+                path="/admin/questions"
+                element={
+                  <AdminProtectedRoute>
+                    <AdminQuestionsPage />
+                  </AdminProtectedRoute>
                 }
               />
             </Routes>

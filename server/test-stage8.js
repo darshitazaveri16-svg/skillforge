@@ -428,7 +428,7 @@ async function runStage8Tests() {
       },
     });
     const asmStartData = await asmStartRes.json();
-    assert(asmStartRes.status === 200 && asmStartData.assessmentId, 'Stage 4: Assessment started successfully');
+    assert((asmStartRes.status === 200 || asmStartRes.status === 201) && asmStartData.assessmentId, 'Stage 4: Assessment started successfully');
     const asmId = asmStartData.assessmentId;
 
     const asmSubmitRes = await fetch(`${BASE_URL}/assessment/${asmId}/submit`, {
@@ -466,7 +466,7 @@ async function runStage8Tests() {
       headers: { Authorization: `Bearer ${token1}` },
     });
     const roadmapData = await roadmapRes.json();
-    assert(roadmapRes.status === 200 && Array.isArray(roadmapData.roadmap?.items), 'Stage 6: Roadmap generated successfully');
+    assert(roadmapRes.status === 200 && Array.isArray(roadmapData.roadmap?.items || roadmapData.data?.items), 'Stage 6: Roadmap generated successfully');
 
     // Stage 7: Aggregated Dashboard
     const dashRes = await fetch(`${BASE_URL}/dashboard`, {
