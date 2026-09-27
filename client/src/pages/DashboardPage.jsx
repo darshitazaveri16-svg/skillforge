@@ -18,7 +18,8 @@ import {
   Play,
   ShieldCheck,
   Zap,
-  Activity
+  Activity,
+  FileText
 } from 'lucide-react';
 import {
   ResponsiveContainer,
@@ -115,6 +116,7 @@ export default function DashboardPage() {
     assessmentHistory = [],
     roadmapProgress,
     prioritySkills = [],
+    resumeMatch,
     welcomeMessage,
     hasCareer,
     hasAssessment
@@ -283,6 +285,27 @@ export default function DashboardPage() {
             </div>
           </div>
         </div>
+
+        {/* Resume Analyzer Card for Students Awaiting Assessment */}
+        <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+          <div className="flex items-center gap-4">
+            <div className="w-12 h-12 rounded-xl bg-indigo-600/10 border border-indigo-500/20 text-indigo-400 flex items-center justify-center shrink-0">
+              <FileText className="w-6 h-6" />
+            </div>
+            <div>
+              <h3 className="font-bold text-white text-base">Resume Analyzer</h3>
+              <p className="text-xs text-slate-400 mt-0.5">
+                Upload your resume to see how well your skills match <strong className="text-slate-200">{career?.name}</strong>.
+              </p>
+            </div>
+          </div>
+          <Link
+            to="/resume-analyzer"
+            className="px-5 py-2.5 bg-slate-800 hover:bg-slate-700 text-white font-semibold text-xs rounded-xl border border-slate-700 flex items-center gap-2 transition shrink-0"
+          >
+            Analyze Resume <ArrowRight className="w-4 h-4 text-indigo-400" />
+          </Link>
+        </div>
       </div>
     );
   }
@@ -333,12 +356,18 @@ export default function DashboardPage() {
             >
               <BookOpen className="w-4 h-4 text-violet-400" /> Continue Roadmap
             </Link>
+            <Link
+              to="/resume-analyzer"
+              className="px-4 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold rounded-xl text-xs transition border border-slate-700 flex items-center gap-2"
+            >
+              <FileText className="w-4 h-4 text-indigo-400" /> Analyze Resume
+            </Link>
           </div>
         </div>
       </div>
 
       {/* 2. OVERVIEW METRICS GRID */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {/* Career Readiness Card */}
         <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl flex flex-col justify-between">
           <div>
@@ -433,6 +462,48 @@ export default function DashboardPage() {
               className="text-xs font-semibold text-indigo-400 hover:text-indigo-300 flex items-center gap-1"
             >
               Continue Learning <ArrowRight className="w-3.5 h-3.5" />
+            </Link>
+          </div>
+        </div>
+
+        {/* Resume Match Card (Stage 8) */}
+        <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl flex flex-col justify-between">
+          <div>
+            <div className="flex items-center justify-between text-slate-400 mb-3">
+              <span className="text-xs font-semibold uppercase tracking-wider">Resume Match</span>
+              <FileText className="w-5 h-5 text-indigo-400" />
+            </div>
+            {resumeMatch ? (
+              <>
+                <div className="flex items-baseline gap-2 mb-1">
+                  <span className="text-4xl font-extrabold text-white">
+                    {resumeMatch.score}%
+                  </span>
+                  <span className="text-xs text-slate-400">Match Score</span>
+                </div>
+                <p className="text-xs text-slate-400">
+                  Target: <strong className="text-slate-200">{resumeMatch.targetCareer || career?.name}</strong>
+                </p>
+                <p className="text-[11px] text-slate-500 mt-1">
+                  {resumeMatch.matchedCount} matched • {resumeMatch.missingCount} missing
+                </p>
+              </>
+            ) : (
+              <div className="space-y-2 py-1">
+                <p className="text-sm font-semibold text-white">No Resume Analyzed</p>
+                <p className="text-xs text-slate-400">
+                  Upload your resume to see how well it matches your target career.
+                </p>
+              </div>
+            )}
+          </div>
+          <div className="mt-6 pt-4 border-t border-slate-800 flex justify-between items-center">
+            <span className="text-xs text-slate-500">Stage 8 Analyzer</span>
+            <Link
+              to="/resume-analyzer"
+              className="text-xs font-semibold text-indigo-400 hover:text-indigo-300 flex items-center gap-1"
+            >
+              {resumeMatch ? 'Analyze Resume' : 'Upload Resume'} <ArrowRight className="w-3.5 h-3.5" />
             </Link>
           </div>
         </div>

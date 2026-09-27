@@ -14,6 +14,7 @@ import AssessmentPage from './pages/AssessmentPage';
 import AssessmentHistoryPage from './pages/AssessmentHistoryPage';
 import ReadinessPage from './pages/ReadinessPage';
 import RoadmapPage from './pages/RoadmapPage';
+import ResumeAnalyzerPage from './pages/ResumeAnalyzerPage';
 import ProtectedRoute from './components/ProtectedRoute';
 
 export default function App() {
@@ -88,6 +89,14 @@ export default function App() {
                 element={
                   <ProtectedRoute>
                     <RoadmapPage />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/resume-analyzer"
+                element={
+                  <ProtectedRoute>
+                    <ResumeAnalyzerPage />
                   </ProtectedRoute>
                 }
               />

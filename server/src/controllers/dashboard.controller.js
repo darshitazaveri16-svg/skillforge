@@ -4,11 +4,13 @@ import Career from '../models/Career.js';
 import Assessment from '../models/Assessment.js';
 import AssessmentResult from '../models/AssessmentResult.js';
 import Roadmap from '../models/Roadmap.js';
+import ResumeAnalysis from '../models/ResumeAnalysis.js';
 import { calculateSkillGapAndReadiness } from '../services/skillGap.service.js';
 import { inMemoryStore } from '../config/seedData.js';
 import { inMemoryAssessments, inMemoryAssessmentResults } from './assessment.controller.js';
 import { inMemoryRoadmaps } from './roadmap.controller.js';
 import { inMemoryUsers } from './auth.controller.js';
+import { inMemoryResumeAnalyses } from './resume.controller.js';
 
 /**
  * @desc    Get aggregated dashboard data for authenticated student
@@ -219,6 +221,28 @@ export const getDashboard = async (req, res) => {
       welcomeMessage = 'Focus on your highest-priority skill gaps to improve your readiness.';
     }
 
+    // Fetch Latest Resume Match
+    let latestResume = null;
+    if (isDbConnected) {
+      latestResume = await ResumeAnalysis.findOne({ user: userId }).sort({ createdAt: -1 });
+    } else {
+      const userAnalyses = inMemoryResumeAnalyses.filter(
+        (a) => a.user === userId.toString() || a.user?._id === userId.toString()
+      );
+      latestResume = userAnalyses[userAnalyses.length - 1] || null;
+    }
+
+    const resumeMatch = latestResume
+      ? {
+          score: latestResume.matchScore,
+          targetCareer: latestResume.targetCareer,
+          fileName: latestResume.fileName,
+          matchedCount: latestResume.matchedSkills?.length || 0,
+          missingCount: latestResume.missingSkills?.length || 0,
+          analyzedAt: latestResume.createdAt,
+        }
+      : null;
+
     return res.status(200).json({
       student: studentInfo,
       career: careerInfo,
@@ -244,6 +268,7 @@ export const getDashboard = async (req, res) => {
       assessmentHistory,
       roadmapProgress,
       prioritySkills,
+      resumeMatch,
       welcomeMessage,
       hasCareer: true,
       hasAssessment
