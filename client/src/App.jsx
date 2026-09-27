@@ -22,6 +22,7 @@ import AdminStudentsPage from './pages/AdminStudentsPage';
 import AdminCareersPage from './pages/AdminCareersPage';
 import AdminSkillsPage from './pages/AdminSkillsPage';
 import AdminQuestionsPage from './pages/AdminQuestionsPage';
+import NotFoundPage from './pages/NotFoundPage';
 
 export default function App() {
   return (
@@ -146,6 +147,7 @@ export default function App() {
                   </AdminProtectedRoute>
                 }
               />
+              <Route path="*" element={<NotFoundPage />} />
             </Routes>
           </main>
           <Footer />
