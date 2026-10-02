@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
+import { API_URL } from '../services/api';
 import { Briefcase, Check, ArrowRight, Loader2, AlertCircle, ShieldCheck, Sparkles } from 'lucide-react';
 
 export default function CareersPage() {
@@ -10,7 +11,6 @@ export default function CareersPage() {
   const [successMessage, setSuccessMessage] = useState('');
 
   const { user, token, setError: setAuthError } = useAuth();
-  const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
 
   useEffect(() => {
     const fetchCareers = async () => {

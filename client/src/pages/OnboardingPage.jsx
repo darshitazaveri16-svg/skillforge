@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { API_URL } from '../services/api';
 import { 
   Compass, 
   Sparkles, 
@@ -26,7 +27,6 @@ export default function OnboardingPage() {
 
   const { user, token, updateUser } = useAuth();
   const navigate = useNavigate();
-  const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
 
   useEffect(() => {
     const fetchCareers = async () => {

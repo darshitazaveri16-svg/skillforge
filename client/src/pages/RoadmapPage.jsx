@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { API_URL } from '../services/api';
 import { 
   Map, 
   Target, 
@@ -26,8 +27,6 @@ export default function RoadmapPage() {
   const [updatingItemId, setUpdatingItemId] = useState(null);
   const [error, setError] = useState(null);
   const [hasAssessment, setHasAssessment] = useState(true);
-
-  const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
 
   useEffect(() => {
     fetchRoadmap();

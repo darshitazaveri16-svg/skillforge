@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { API_URL } from '../services/api';
 import { User, Mail, Target, Shield, Clock, Award, ArrowRight, Loader2 } from 'lucide-react';
 
 export default function ProfilePage() {
   const { user, token } = useAuth();
   const [profileData, setProfileData] = useState(user);
   const [loading, setLoading] = useState(true);
-  const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
 
   useEffect(() => {
     const fetchLatestProfile = async () => {

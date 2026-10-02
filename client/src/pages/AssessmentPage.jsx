@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { API_URL } from '../services/api';
 import { 
   Sparkles, 
   Target, 
@@ -20,7 +21,6 @@ import {
 export default function AssessmentPage() {
   const { user, token } = useAuth();
   const navigate = useNavigate();
-  const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
 
   const [stage, setStage] = useState('start'); // 'start' | 'question' | 'completed'
   const [assessmentId, setAssessmentId] = useState(null);

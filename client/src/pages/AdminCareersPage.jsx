@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { API_URL } from '../services/api';
 import {
   Briefcase,
   Plus,
@@ -34,7 +35,6 @@ export default function AdminCareersPage() {
   const [formSkills, setFormSkills] = useState([]); // [{ skill: id, targetLevel: 80 }]
   const [submitting, setSubmitting] = useState(false);
 
-  const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
   const token = authToken || localStorage.getItem('skillforge_token') || localStorage.getItem('token');
 
   useEffect(() => {

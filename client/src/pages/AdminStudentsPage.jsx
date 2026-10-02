@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { API_URL } from '../services/api';
 import {
   Users,
   Search,
@@ -30,7 +31,6 @@ export default function AdminStudentsPage() {
   const [error, setError] = useState('');
   const [selectedStudent, setSelectedStudent] = useState(null);
 
-  const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
   const token = authToken || localStorage.getItem('skillforge_token') || localStorage.getItem('token');
 
   // Load careers for filter dropdown

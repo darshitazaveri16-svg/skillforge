@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { API_URL } from '../services/api';
 import { History, Award, Calendar, Target, Loader2, ArrowRight, BrainCircuit } from 'lucide-react';
 
 export default function AssessmentHistoryPage() {
@@ -8,8 +9,6 @@ export default function AssessmentHistoryPage() {
   const [history, setHistory] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-
-  const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
 
   useEffect(() => {
     const fetchHistory = async () => {

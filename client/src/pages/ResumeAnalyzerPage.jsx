@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { API_URL } from '../services/api';
 import {
   FileText,
   Upload,
@@ -31,7 +32,6 @@ export default function ResumeAnalyzerPage() {
   const [dragActive, setDragActive] = useState(false);
   const fileInputRef = useRef(null);
 
-  const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
   const token = authToken || localStorage.getItem('skillforge_token') || localStorage.getItem('token');
 
   // Load latest analysis & history on mount
